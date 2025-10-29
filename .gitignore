@@ -1,0 +1,16 @@
+# Environment variables
+.env
+server/.env
+
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Logs
+*.log
+logs/
+server/logs/
+
+# OS / Editor files
+.DS_Store
+*.swp
