@@ -5,6 +5,7 @@
             isSpeaking: false,
             currentLanguage: { code: 'en', name: 'English', voice: 'Achird' }
         };
+        let currentAudio = null;
 
         const LANGUAGES = [
             { code: 'en', name: 'English', voice: 'Achird' },
@@ -161,6 +162,52 @@
                 return null;
             }
         };
+
+        const playAudio = (audioUrl) => {
+            const stopBtn = document.getElementById("stopAudioBtn");
+
+            // Stop any previous audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            // Create new audio and play
+            currentAudio = new Audio(audioUrl);
+            currentAudio.play();
+
+            // Show stop button while playing
+            stopBtn.style.display = "inline-block";
+
+            // Hide when playback ends
+            currentAudio.addEventListener("ended", () => {
+                stopBtn.style.display = "none";
+            });
+
+            // Also hide if playback is manually stopped
+            currentAudio.addEventListener("pause", () => {
+                if (currentAudio.currentTime < currentAudio.duration) {
+                    stopBtn.style.display = "none";
+                }
+            });
+        };
+
+// stop button handler
+        document.getElementById("stopAudioBtn").addEventListener("click", () => {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            //hiding stop button
+            document.getElementById("stopAudioBtn").style.display = "none";
+
+            // ✅ Reset UI and state so "Listen (TTS)" works again
+            setAppState({ isSpeaking: false });
+            const $button = $(".tts-btn"); // or your specific selector
+            $button.find('i[data-lucide="refresh-cw"]').attr('data-lucide', 'mic').removeClass('animate-spin');
+            $button.find('span').text('Listen (TTS)');
+            $button.prop('disabled', false);
+        });
 
         // --- RENDERING FUNCTIONS (using jQuery) ---
 
@@ -349,6 +396,7 @@
             });
         };
 
+        //for handling audio play part
         const handleSpeech = async (text, button) => {
             if (currentState.isSpeaking) return;
             setAppState({ isSpeaking: true });
@@ -359,34 +407,52 @@
             $button.find('i[data-lucide="mic"]').attr('data-lucide', 'refresh-cw').addClass('animate-spin');
             $button.find('span').text('Speaking...');
             
-            // Fetch TTS audio
+          // Fetch TTS audio
             const voice = currentState.currentLanguage.voice;
             const audioUrl = await fetchTTSAudio(text, voice);
 
             if (audioUrl) {
-                const audio = new Audio(audioUrl);
-                audio.onended = () => {
+                // Stop any previously playing audio
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+
+                // Create new Audio object
+                currentAudio = new Audio(audioUrl);
+
+                // Show Stop button while playing
+                const stopBtn = document.getElementById("stopAudioBtn");
+                stopBtn.style.display = "inline-block";
+
+                currentAudio.onended = () => {
                     setAppState({ isSpeaking: false });
                     $button.find('i[data-lucide="refresh-cw"]').attr('data-lucide', 'mic').removeClass('animate-spin');
                     $button.find('span').text('Listen (TTS)');
                     $button.prop('disabled', false);
+                    stopBtn.style.display = "none";
                     URL.revokeObjectURL(audioUrl);
                 };
-                audio.onerror = () => {
+
+                currentAudio.onerror = () => {
                     setAppState({ isSpeaking: false });
                     alert('Error playing audio. The TTS model might not support the complexity or length of the response in this language.');
                     $button.find('i[data-lucide="refresh-cw"]').attr('data-lucide', 'mic').removeClass('animate-spin');
                     $button.find('span').text('Listen (TTS)');
                     $button.prop('disabled', false);
+                    stopBtn.style.display = "none";
                     URL.revokeObjectURL(audioUrl);
                 };
-                audio.play().catch(e => {
+
+                currentAudio.play().catch(e => {
                     console.error("Audio playback failed:", e);
                     setAppState({ isSpeaking: false });
                     $button.find('i[data-lucide="refresh-cw"]').attr('data-lucide', 'mic').removeClass('animate-spin');
                     $button.find('span').text('Listen (TTS)');
                     $button.prop('disabled', false);
+                    stopBtn.style.display = "none";
                 });
+
             } else {
                 setAppState({ isSpeaking: false });
                 alert('Failed to generate audio response.');
@@ -394,6 +460,7 @@
                 $button.find('span').text('Listen (TTS)');
                 $button.prop('disabled', false);
             }
+
         };
 
         const handleTabClick = (e) => {
