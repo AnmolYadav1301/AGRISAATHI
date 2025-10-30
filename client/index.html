@@ -25,10 +25,19 @@
 
   <!-- Header -->
   <header class="w-full max-w-4xl bg-white shadow-xl rounded-xl overflow-hidden">
-    <div class="p-4 bg-green-700 text-white">
-      <h1 class="text-2xl font-extrabold">Kisan Sahayak (किसान सहायक)</h1>
+    <!-- <div class="p-4 bg-green-700 text-white">
+      <h1 class="text-2xl font-extrabold">AgriSaathi</h1>
       <p class="text-sm opacity-90 mt-1">AI-powered agricultural assistant</p>
-    </div>
+    </div> -->
+
+    <section class="relative bg-gradient-to-r from-green-600 to-green-500 text-white text-center py-10 rounded-b-3xl shadow-lg">
+      <img src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="Farm" class="absolute left-8 top-8 w-24 opacity-30" />
+      <div class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-extrabold mb-3">🌱 AgriSaathi</h1>
+        <p class="text-lg">Your Smart Farming Assistant — Mandi Rates, Weather Updates, and Voice Guidance.</p>
+      </div>
+    </section>
+
 
     <!-- Tabs -->
     <nav id="tab-nav" class="flex bg-gray-50 border-t border-gray-200">
@@ -82,19 +91,37 @@
     </section>
 
     <!-- Market -->
-    <section id="Market" class="tab-content hidden p-6 h-full overflow-y-auto">
-      <h2 class="text-2xl font-extrabold text-green-800 mb-4 flex items-center">
-        <i data-lucide="truck" class="w-6 h-6 mr-2"></i> Mandi Prices
-      </h2>
-      <div id="mandi-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      <div id="weather-advisory" class="mt-6 p-4 bg-green-50 rounded-xl border border-green-200"></div>
-    </section>
+<section
+  id="Market"
+  class="tab-content hidden p-6 h-full overflow-y-auto bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md"
+  style="background-image: url('https://cdn-icons-png.flaticon.com/512/3062/3062614.png');
+         background-repeat: no-repeat;
+         background-position: right 2rem bottom 2rem;
+         background-size: 120px;"
+>
+  <h2 class="text-3xl font-extrabold text-green-800 mb-4 flex items-center">
+    <i data-lucide="truck" class="w-7 h-7 mr-3"></i> 🌾 Mandi Prices
+  </h2>
+
+  <div class="flex flex-wrap gap-3 mb-4">
+    <input id="commodityInput" type="text" placeholder="Commodity (e.g. Tomato)" class="p-2 border rounded-md flex-1" />
+    <input id="stateInput" type="text" placeholder="State (optional)" class="p-2 border rounded-md flex-1" />
+    <button id="fetchMandiBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Get Prices</button>
+  </div>
+
+  <div id="mandiResults" class="overflow-x-auto mb-6 bg-white rounded-xl shadow-inner p-4"></div>
+</section>
+
+    <!-- <div id="weather-advisory" class="mt-6 p-4 bg-green-50 rounded-xl border border-green-200"></div>
+
+    </section> -->
   </main>
 
   <!-- Footer / notes -->
   <div class="w-full max-w-4xl text-xs text-gray-600 mt-4">
-    <p><strong>Note:</strong> This is a demo frontend. For production use, never expose API keys in client-side code — use a backend proxy.</p>
+    <p><strong>Be Proud:</strong> There is no survival possible without farmers, Keep Smiling! .</p>
   </div>
+
 
   <script src="script.js"></script>
   

@@ -308,39 +308,39 @@
             }
         };
 
-        const renderMandi = () => {
-            const $mandiList = $('#mandi-list');
-            $mandiList.empty();
-            INITIAL_MANDI.forEach((item) => {
-                const trendColor = item.trend === 'Rising' ? 'text-red-500' : 'text-green-500';
-                const [price, unit] = item.modalPrice.split('/');
-                const mandiHtml = `
-                    <div class="p-4 bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-green-100 flex justify-between items-center transition hover:bg-green-50">
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">${item.market}</p>
-                            <h3 class="text-xl font-extrabold text-green-700">${item.crop}</h3>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-2xl font-black text-green-900">${price.trim()}</p>
-                            <p class="text-sm text-gray-600">${unit.trim()} <span class="font-semibold ${trendColor}">(${item.trend})</span></p>
-                        </div>
-                    </div>
-                `;
-                $mandiList.append(mandiHtml);
-            });
+        // const renderMandi = () => {
+        //     const $mandiList = $('#mandi-list');
+        //     $mandiList.empty();
+        //     INITIAL_MANDI.forEach((item) => {
+        //         const trendColor = item.trend === 'Rising' ? 'text-red-500' : 'text-green-500';
+        //         const [price, unit] = item.modalPrice.split('/');
+        //         const mandiHtml = `
+        //             <div class="p-4 bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-green-100 flex justify-between items-center transition hover:bg-green-50">
+        //                 <div>
+        //                     <p class="text-sm font-medium text-gray-500">${item.market}</p>
+        //                     <h3 class="text-xl font-extrabold text-green-700">${item.crop}</h3>
+        //                 </div>
+        //                 <div class="text-right">
+        //                     <p class="text-2xl font-black text-green-900">${price.trim()}</p>
+        //                     <p class="text-sm text-gray-600">${unit.trim()} <span class="font-semibold ${trendColor}">(${item.trend})</span></p>
+        //                 </div>
+        //             </div>
+        //         `;
+        //         $mandiList.append(mandiHtml);
+        //     });
 
-            // Render Weather Advisory
-            $('#weather-advisory').html(`
-                <p class="font-semibold text-green-800">Weather Advisory (उदाहरण)</p>
-                <p class="text-sm text-green-700 mt-1 flex items-center">
-                    <i data-lucide="sun" class="w-4 h-4 mr-1 text-yellow-500"></i>
-                    Current Outlook: Mild temperatures, clear skies. Best time for Rabi crop sowing in Northern regions. Reservoir levels are high.
-                </p>
-            `);
-             if (typeof createIcons !== 'undefined') {
-                createIcons({ icons });
-            }
-        };
+        //     // Render Weather Advisory
+        //     $('#weather-advisory').html(`
+        //         <p class="font-semibold text-green-800">Weather Advisory (उदाहरण)</p>
+        //         <p class="text-sm text-green-700 mt-1 flex items-center">
+        //             <i data-lucide="sun" class="w-4 h-4 mr-1 text-yellow-500"></i>
+        //             Current Outlook: Mild temperatures, clear skies. Best time for Rabi crop sowing in Northern regions. Reservoir levels are high.
+        //         </p>
+        //     `);
+        //      if (typeof createIcons !== 'undefined') {
+        //         createIcons({ icons });
+        //     }
+        // };
         
         const updateLanguageSelector = () => {
             const $select = $('#language-select');
@@ -494,6 +494,79 @@
                 $('#send-button').prop('disabled', inputVal.length === 0 || currentState.isLoading);
             });
         };
+
+        // 🟢 Fetch and render mandi prices
+const renderMandi = async () => {
+  const commodity = document.getElementById("commodityInput").value.trim() || "Tomato";
+  const state = document.getElementById("stateInput").value.trim() || "Punjab";
+  const mandiResults = document.getElementById("mandiResults");
+
+  mandiResults.innerHTML = `<p class="text-gray-500">Fetching latest prices...</p>`;
+
+  try {
+       const response = await fetch(
+      `http://localhost:5000/api/mandi-prices?commodity=${encodeURIComponent(commodity)}&state=${encodeURIComponent(state)}`
+    );
+
+    const data = await response.json();
+
+    if (!data || !data.data || data.data.length === 0) {
+      mandiResults.innerHTML = `<p class="text-red-500">No price data available right now.</p>`;
+      return;
+    }
+
+    // Filter results (optional)
+    const filtered = data.data.filter(item =>
+      item.commodity.toLowerCase().includes(commodity.toLowerCase()) &&
+      item.state.toLowerCase().includes(state.toLowerCase())
+    );
+
+    if (filtered.length === 0) {
+      mandiResults.innerHTML = `<p class="text-yellow-600">No results found for "${commodity}" in "${state}".</p>`;
+      return;
+    }
+
+    // Render table
+    const tableHTML = `
+      <table class="min-w-full bg-white border border-gray-200 rounded-xl shadow-sm">
+        <thead class="bg-green-100">
+          <tr>
+            <th class="px-4 py-2 border">Date</th>
+            <th class="px-4 py-2 border">State</th>
+            <th class="px-4 py-2 border">Market</th>
+            <th class="px-4 py-2 border">Commodity</th>
+            <th class="px-4 py-2 border">Min Price</th>
+            <th class="px-4 py-2 border">Modal Price</th>
+            <th class="px-4 py-2 border">Max Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(item => `
+            <tr class="text-center border-t hover:bg-green-50">
+              <td class="px-4 py-2">${item.date}</td>
+              <td class="px-4 py-2">${item.state}</td>
+              <td class="px-4 py-2">${item.market}</td>
+              <td class="px-4 py-2">${item.commodity}</td>
+              <td class="px-4 py-2">${item.min_price}</td>
+              <td class="px-4 py-2">${item.modal_price}</td>
+              <td class="px-4 py-2">${item.max_price}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+    mandiResults.innerHTML = tableHTML;
+
+  } catch (err) {
+    console.error("Error fetching mandi data:", err);
+    mandiResults.innerHTML = `<p class="text-red-500">Failed to load mandi prices. Try again later.</p>`;
+  }
+};
+
+// 🟢 Fetch button event
+document.getElementById("fetchMandiBtn").addEventListener("click", renderMandi);
+
 
         const initializeApp = () => {
             updateLanguageSelector();
