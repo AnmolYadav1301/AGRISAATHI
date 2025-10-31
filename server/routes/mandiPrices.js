@@ -47,5 +47,6 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch mandi prices" });
   }
 });
+
 export default router;
 // module.exports = router;

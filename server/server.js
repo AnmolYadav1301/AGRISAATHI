@@ -104,6 +104,50 @@ app.post("/api/tts", async (req, res) => {
 });
 
 
+// functionality for the translator box
+
+// /api/translate
+app.post("/api/translate", async (req, res) => {
+  const { text, targetLang } = req.body;
+
+  try {
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Translate the following text into ${targetLang} language:\n\n${text}`
+              }
+            ]
+          }
+        ]
+      }
+    );
+
+    // ✅ Extract correct text safely
+    const candidates = response.data?.candidates || [];
+    const translatedText =
+      candidates[0]?.content?.parts?.[0]?.text?.trim() ||
+      "⚠️ No translated text received";
+
+    console.log("Translated:", translatedText);
+    res.json({ translatedText });
+  } catch (error) {
+    console.error("Error details:", error.response?.data || error.message);
+    res.status(500).json({
+      error: "Translation failed",
+      details: error.response?.data || error.message,
+    });
+  }
+});
+
+
+
+
+
 
 // ⚡ Default port fallback
 const PORT = process.env.PORT || 5000;
