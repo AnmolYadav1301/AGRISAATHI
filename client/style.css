@@ -55,3 +55,56 @@ button {
 button:hover {
   background: #2e7d32;
 }
+
+#translatorWidget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 250px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  z-index: 999;
+}
+
+#translatorWidget h3 {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+#translatorWidget select,
+#translatorWidget textarea,
+#translatorWidget button {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#translatorWidget textarea {
+  height: 60px;
+  resize: none;
+  padding: 6px;
+}
+
+#translatorWidget button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+#translatorWidget button:hover {
+  background-color: #45a049;
+}
+
+#translatorWidget .output {
+  background: #f7f7f7;
+  padding: 6px;
+  border-radius: 8px;
+  min-height: 40px;
+  font-size: 14px;
+}

@@ -209,6 +209,33 @@
             $button.prop('disabled', false);
         });
 
+        // for handling the translator tab
+        document.getElementById("translateBtn").addEventListener("click", async () => {
+        const text = document.getElementById("textToTranslate").value.trim();
+        const lang = document.getElementById("targetLang").value;
+        const outputDiv = document.getElementById("translatedOutput");
+
+        if (!text) {
+            outputDiv.innerText = "⚠️ Please enter text.";
+            return;
+        }
+
+        outputDiv.innerText = "Translating...";
+
+        try {
+            const response = await fetch("/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text, targetLang: lang }),
+            });
+            const data = await response.json();
+            outputDiv.innerText = data.translatedText || "❌ Translation failed.";
+        } catch (err) {
+            outputDiv.innerText = "❌ Error connecting to translator.";
+        }
+        });
+
+
         // --- RENDERING FUNCTIONS (using jQuery) ---
 
         const renderChatHistory = () => {
@@ -308,39 +335,6 @@
             }
         };
 
-        // const renderMandi = () => {
-        //     const $mandiList = $('#mandi-list');
-        //     $mandiList.empty();
-        //     INITIAL_MANDI.forEach((item) => {
-        //         const trendColor = item.trend === 'Rising' ? 'text-red-500' : 'text-green-500';
-        //         const [price, unit] = item.modalPrice.split('/');
-        //         const mandiHtml = `
-        //             <div class="p-4 bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-green-100 flex justify-between items-center transition hover:bg-green-50">
-        //                 <div>
-        //                     <p class="text-sm font-medium text-gray-500">${item.market}</p>
-        //                     <h3 class="text-xl font-extrabold text-green-700">${item.crop}</h3>
-        //                 </div>
-        //                 <div class="text-right">
-        //                     <p class="text-2xl font-black text-green-900">${price.trim()}</p>
-        //                     <p class="text-sm text-gray-600">${unit.trim()} <span class="font-semibold ${trendColor}">(${item.trend})</span></p>
-        //                 </div>
-        //             </div>
-        //         `;
-        //         $mandiList.append(mandiHtml);
-        //     });
-
-        //     // Render Weather Advisory
-        //     $('#weather-advisory').html(`
-        //         <p class="font-semibold text-green-800">Weather Advisory (उदाहरण)</p>
-        //         <p class="text-sm text-green-700 mt-1 flex items-center">
-        //             <i data-lucide="sun" class="w-4 h-4 mr-1 text-yellow-500"></i>
-        //             Current Outlook: Mild temperatures, clear skies. Best time for Rabi crop sowing in Northern regions. Reservoir levels are high.
-        //         </p>
-        //     `);
-        //      if (typeof createIcons !== 'undefined') {
-        //         createIcons({ icons });
-        //     }
-        // };
         
         const updateLanguageSelector = () => {
             const $select = $('#language-select');
