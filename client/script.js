@@ -503,6 +503,7 @@ const renderMandi = async () => {
     );
 
     const data = await response.json();
+    console.log("Response from backend:", data);
 
     if (!data || !data.data || data.data.length === 0) {
       mandiResults.innerHTML = `<p class="text-red-500">No price data available right now.</p>`;

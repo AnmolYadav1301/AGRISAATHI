@@ -1,4 +1,3 @@
-
 import express from "express";
 import axios from "axios";
 
@@ -20,13 +19,21 @@ router.get("/", async (req, res) => {
     const response = await axios.get(BASE_URL, { params });
     const records = response.data.records || [];
 
+    // console.log("Fetched Mandi data:", response.data);
+
     // Apply local filtering (so even if API doesn’t return exact matches, we still filter)
     const filtered = records.filter((r) => {
-      const matchesCommodity = !commodity || r.commodity.toLowerCase().includes(commodity.toLowerCase());
-      const matchesState = !state || r.state.toLowerCase().includes(state.toLowerCase());
-      const matchesMarket = !market || r.market.toLowerCase().includes(market.toLowerCase());
+      const matchesCommodity =
+        !commodity || r.commodity.toLowerCase().includes(commodity.toLowerCase());
+      const matchesState =
+        !state || r.state.toLowerCase().includes(state.toLowerCase());
+      const matchesMarket =
+        !market || r.market.toLowerCase().includes(market.toLowerCase());
       return matchesCommodity && matchesState && matchesMarket;
     });
+
+    // 🧠 Use filtered data only if it has results, otherwise fallback to all records
+    const finalRecords = filtered.length > 0 ? filtered : records;
 
     // Simplify result structure
     const simplified = filtered.map((r) => ({
@@ -41,7 +48,9 @@ router.get("/", async (req, res) => {
       unit: r.min_price_unit || "₹/Quintal",
     }));
 
+    console.log(simplified);
     res.json({ data: simplified });
+    // res.json({data : records});
   } catch (err) {
     console.error("Error fetching mandi prices:", err.message);
     res.status(500).json({ error: "Failed to fetch mandi prices" });
@@ -49,4 +58,3 @@ router.get("/", async (req, res) => {
 });
 
 export default router;
-// module.exports = router;
