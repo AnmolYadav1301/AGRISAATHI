@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
     const response = await axios.get(BASE_URL, { params });
     const records = response.data.records || [];
 
-    // console.log("Fetched Mandi data:", response.data);
+    console.log("Fetched Mandi data:", response.data);
 
     // Apply local filtering (so even if API doesn’t return exact matches, we still filter)
     const filtered = records.filter((r) => {
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
     const finalRecords = filtered.length > 0 ? filtered : records;
 
     // Simplify result structure
-    const simplified = filtered.map((r) => ({
+    const simplified = finalRecords.map((r) => ({
       date: r.arrival_date,
       state: r.state,
       market: r.market,
@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
       unit: r.min_price_unit || "₹/Quintal",
     }));
 
-    console.log(simplified);
+    console.log("hi",simplified);
     res.json({ data: simplified });
     // res.json({data : records});
   } catch (err) {

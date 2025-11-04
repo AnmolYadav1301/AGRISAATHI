@@ -498,7 +498,7 @@ const renderMandi = async () => {
   mandiResults.innerHTML = `<p class="text-gray-500">Fetching latest prices...</p>`;
 
   try {
-       const response = await fetch(
+    const response = await fetch(
       `http://localhost:5000/api/mandi-prices?commodity=${encodeURIComponent(commodity)}&state=${encodeURIComponent(state)}`
     );
 
@@ -510,18 +510,8 @@ const renderMandi = async () => {
       return;
     }
 
-    // Filter results (optional)
-    const filtered = data.data.filter(item =>
-      item.commodity.toLowerCase().includes(commodity.toLowerCase()) &&
-      item.state.toLowerCase().includes(state.toLowerCase())
-    );
+    const mandiList = data.data; // ✅ Use directly instead of re-filtering
 
-    if (filtered.length === 0) {
-      mandiResults.innerHTML = `<p class="text-yellow-600">No results found for "${commodity}" in "${state}".</p>`;
-      return;
-    }
-
-    // Render table
     const tableHTML = `
       <table class="min-w-full bg-white border border-gray-200 rounded-xl shadow-sm">
         <thead class="bg-green-100">
@@ -536,7 +526,7 @@ const renderMandi = async () => {
           </tr>
         </thead>
         <tbody>
-          ${filtered.map(item => `
+          ${mandiList.map(item => `
             <tr class="text-center border-t hover:bg-green-50">
               <td class="px-4 py-2">${item.date}</td>
               <td class="px-4 py-2">${item.state}</td>
@@ -558,6 +548,7 @@ const renderMandi = async () => {
     mandiResults.innerHTML = `<p class="text-red-500">Failed to load mandi prices. Try again later.</p>`;
   }
 };
+
 
 // 🟢 Fetch button event
 document.getElementById("fetchMandiBtn").addEventListener("click", renderMandi);
